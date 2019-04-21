@@ -1,6 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include<iostream>
+#include<math.h>
 using namespace sf;
 float offsetX = 0, offsetY = 0;
 const int H = 15;
@@ -14,12 +15,12 @@ String TileMap[H] = {
 "0             kkkkkkk                      0                                                                                                         0",
 "0                      kk                  0                                                                                                         0",
 "0                         k                0                                                                                                         0",
-"0                          kk              0                                                                                                         0",
-"0                             k            0                                                                                                         0",
+"0                          kk    T         0                                                                                                         0",
+"0                             k  t         0                                                                                                         0",
 "0                              kkk         0                                                                                                         0",
 "0                        ck       k        0                                                                                                         0",
-"0                       kkk         kk   t 0                                                                                                         0",
-"0        g g  g         kkk              - 0                                                                                                         0",
+"0                       kkk         kk   T 0                                                                                                         0",
+"0        g    g g       kkk              t 0                                                                                                         0",
 "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
 };
 
@@ -87,12 +88,28 @@ public:
 						rect.left = j * 64 + 64;
 					}
 				}
+				if (TileMap[i][j] == 'g'  && (rect.top + 76) > ( i *64 + 32) && (abs(rect.left- j*64) < 40))
+				{
+					sprite.setColor(Color::Red);
+				}
 				if (TileMap[i][j] == 'c')
 				{
 					TileMap[i][j] = ' ';
 					keyes++;
 					
 				}
+				if ((TileMap[i][j] == 'T') && keyes!=0 )
+				{
+					keyes = keyes - 1;
+					TileMap[i][j] = 'V';
+				}
+				if ((TileMap[i][j] == 't') && keyes!= 0)
+				{
+					keyes = keyes - 1;
+					TileMap[i-1][j] = 'V';
+					TileMap[i][j] = 'v';
+				}
+				
 			}
 
 	}
@@ -235,8 +252,11 @@ int main()
 				if (TileMap[i][j] == 'c')
 					tile.setTextureRect(IntRect(512, 256, 64, 64)); // ключ
 
-				if (TileMap[i][j] == 't')
+				if (TileMap[i][j] == 'T')
 					tile.setTextureRect(IntRect(448, 318, 64, 128)); // дверь
+
+				if (TileMap[i][j] == 'V')
+					tile.setTextureRect(IntRect(320, 320, 64, 128)); // дверь открыта
 
 				if (TileMap[i][j] == 'g')
 					tile.setTextureRect(IntRect(0, 320, 64, 64));// шипы
@@ -244,7 +264,7 @@ int main()
 				if (TileMap[i][j] == '0')
 					tile.setTextureRect(IntRect(256, 256, 64, 64)); // край карты
 
-				if (TileMap[i][j] == ' ' || TileMap[i][j] == '-')
+				if (TileMap[i][j] == ' ' || TileMap[i][j] == 't' || TileMap[i][j] == 'v')
 					continue;
 
 				tile.setPosition(j * 64 - offsetX, i * 64 - offsetY);
@@ -252,8 +272,8 @@ int main()
 			}
 		if (Hero.getkey() != 0)
 			window.draw(Keyimage);
-		window.draw(Hero.sprite);
 		window.draw(enemy.sprite);
+		window.draw(Hero.sprite);
 
 		window.display();
 	}
