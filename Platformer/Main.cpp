@@ -63,19 +63,19 @@ const int H = 15;
 const int W = 150;
 String TileMap[H] = {
 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-"0                                          k                                    k                                                                    0",
-"0                                          k                                    k                                                                    0",
-"0c                                         k                                    k                                                                    0",
-"0kkkkkkkkkkk                               k                                    k                                                                    0",
-"0             kkkkkkk                      k                                    k                                                                    0",
-"0                      kk                  k                                    k                                                                    0",
-"0                         k                k                                    k                                                                    0",
-"0                          kk              k                                    k                                                                    0",
-"0                             k            k                                    k                                                                    0",
-"0                              kkk         k                                    k                                                                    0",
-"0                        ck       k        k                                    k                                                                    0",
-"0                       kkk         kk   T k                     T              k                                                                    0",
-"0        g    g g       kkk              t k                c    t              k                                                                    0",
+"0                                          k                                           k                                                             0",
+"0                                          k          k                                k                                                             0",
+"0c                                         k       T     k                             k                         c                                   0",
+"0kkkkkkkkkkk                               k       t                                   k                         k                                   0",
+"0             kkkkkkk                      k       k k k   g                           k                        k                                    0",
+"0                      kk                  k             kkkk k kk                     k                       k                                     0",
+"0                         k                k                      k                    k                      k                                      0",
+"0                          kk              k                       kg  g  k            k                 kkkkkk                                      0",
+"0                             k            k                        kkkkkk  k          k                 k                                           0",
+"0                              kkk         k                                 k         k                kk                                           0",
+"0                        ck       k        k                                     k     k              k kk        k  k                               0",
+"0                       kkk         kk   T k                                  k   k    k            k k kT             k                             0",
+"0        g    g g       kkk              t k                                      g cg k            k k kt       g  gggg                             0",
 "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
 };
 
@@ -117,6 +117,7 @@ public:
 			sprite.setTextureRect(IntRect(10 + 94 * int(currentFrame) + 82, 20, -82, 76));
 		sprite.setPosition(rect.left - offsetX, rect.top - offsetY);
 		dx = 0;
+		remove();
 	}
 	void Collision(int num)
 	{
@@ -165,19 +166,25 @@ public:
 					TileMap[i - 1][j] = 'V';
 					TileMap[i][j] = 'v';
 				}
-				if ((TileMap[i][j] == 'V') || (TileMap[i][j] == 'v'))
-				{
-					rect = FloatRect(60*64* Zdvig + 1, 600, 60, 64);
-					Zdvig++;
-		
-				}
-
 			}
 
 	}
 	int getkey()
 	{
 		return keyes;
+	}
+	void remove()
+	{
+		for (int i = rect.top / 64; i < (rect.top + rect.height) / 64; i++)
+			for (int j = rect.left / 64; j < (rect.left + rect.width) / 64; j++)
+			{
+				if ((TileMap[i][j] == 'V') || (TileMap[i][j] == 'v'))
+				{
+					rect = FloatRect(44 * 64 * Zdvig + 1, 600, 60, 64);
+					Zdvig++;
+
+				}
+			}
 	}
 };
 
