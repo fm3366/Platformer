@@ -1,11 +1,12 @@
-#include <SFML/Graphics.hpp>
+ï»¿#include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include<iostream>
 #include<math.h>
 
 using namespace sf;
 bool isExit = 0;
-void menu(RenderWindow & window, bool &exit) 
+int Zdvig = 1;
+void menu(RenderWindow & window, bool &exit)
 {
 	Texture menuTexture1, menuTexture3, aboutTexture, menuBackground;
 	menuTexture1.loadFromFile("111.png");
@@ -27,11 +28,12 @@ void menu(RenderWindow & window, bool &exit)
 		if (IntRect(100, 30, 300, 50).contains(Mouse::getPosition(window)))
 		{
 			menu1.setColor(Color::Blue);
-			menuNum = 1; 
+			menuNum = 1;
 		}
 		if (IntRect(100, 150, 300, 50).contains(Mouse::getPosition(window)))
-		{ menu3.setColor(Color::Blue);
-		menuNum = 3;
+		{
+			menu3.setColor(Color::Blue);
+			menuNum = 3;
 		}
 
 		if (Mouse::isButtonPressed(Mouse::Left))
@@ -39,9 +41,9 @@ void menu(RenderWindow & window, bool &exit)
 			if (menuNum == 1) isMenu = false;
 			if (menuNum == 3)
 			{
-			window.close(); 
-			isMenu = false; 
-			exit = 1;
+				window.close();
+				isMenu = false;
+				exit = 1;
 			}
 
 		}
@@ -61,19 +63,19 @@ const int H = 15;
 const int W = 150;
 String TileMap[H] = {
 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-"0                                          0                                                                                                         0",
-"0                                          0                                                                                                         0",
-"0c                                         0                                                                                                         0",
-"0kkkkkkkkkkk                               0                                                                                                         0",
-"0             kkkkkkk                      0                                                                                                         0",
-"0                      kk                  0                                                                                                         0",
-"0                         k                0                                                                                                         0",
-"0                          kk c  T         0                                                                                                         0",
-"0                             k  t         0                                                                                                         0",
-"0                              kkk         0                                                                                                         0",
-"0                        ck       k        0                                                                                                         0",
-"0                       kkk         kk   T 0                                                                                                         0",
-"0        g    g g       kkk              t 0                                                                                                         0",
+"0                                          k                                    k                                                                    0",
+"0                                          k                                    k                                                                    0",
+"0c                                         k                                    k                                                                    0",
+"0kkkkkkkkkkk                               k                                    k                                                                    0",
+"0             kkkkkkk                      k                                    k                                                                    0",
+"0                      kk                  k                                    k                                                                    0",
+"0                         k                k                                    k                                                                    0",
+"0                          kk              k                                    k                                                                    0",
+"0                             k            k                                    k                                                                    0",
+"0                              kkk         k                                    k                                                                    0",
+"0                        ck       k        k                                    k                                                                    0",
+"0                       kkk         kk   T k                     T              k                                                                    0",
+"0        g    g g       kkk              t k                c    t              k                                                                    0",
 "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
 };
 
@@ -141,7 +143,7 @@ public:
 						rect.left = j * 64 + 64;
 					}
 				}
-				if (TileMap[i][j] == 'g'  && (rect.top + 76) > ( i *64 + 32) && (abs(rect.left- j*64) < 40))
+				if (TileMap[i][j] == 'g' && (rect.top + 76) > (i * 64 + 32) && (abs(rect.left - j * 64) < 40))
 				{
 					sprite.setColor(Color::Red);
 				}
@@ -149,21 +151,27 @@ public:
 				{
 					TileMap[i][j] = ' ';
 					keyes++;
-					
+
 				}
-				if ((TileMap[i][j] == 'T') && keyes!=0 )
+				if ((TileMap[i][j] == 'T') && keyes != 0)
 				{
 					keyes = keyes - 1;
 					TileMap[i][j] = 'V';
-					TileMap[i+1][j] = 'v';
+					TileMap[i + 1][j] = 'v';
 				}
-				if ((TileMap[i][j] == 't') && keyes!= 0)
+				if ((TileMap[i][j] == 't') && keyes != 0)
 				{
 					keyes = keyes - 1;
-					TileMap[i-1][j] = 'V';
+					TileMap[i - 1][j] = 'V';
 					TileMap[i][j] = 'v';
 				}
-				
+				if ((TileMap[i][j] == 'V') || (TileMap[i][j] == 'v'))
+				{
+					rect = FloatRect(60*64* Zdvig + 1, 600, 60, 64);
+					Zdvig++;
+		
+				}
+
 			}
 
 	}
@@ -299,25 +307,25 @@ bool isGameStarted()
 			for (int j = 0; j < W; j++)
 			{
 				if (TileMap[i][j] == 'P')
-					tile.setTextureRect(IntRect(192, 64, 64, 64)); //ïîë
+					tile.setTextureRect(IntRect(192, 64, 64, 64)); //Ã¯Ã®Ã«
 
 				if (TileMap[i][j] == 'k')
-					tile.setTextureRect(IntRect(192, 256, 64, 64)); // áëîêè ïî êîòðûì ïðûãàòü
+					tile.setTextureRect(IntRect(192, 256, 64, 64)); // Ã¡Ã«Ã®ÃªÃ¨ Ã¯Ã® ÃªÃ®Ã²Ã°Ã»Ã¬ Ã¯Ã°Ã»Ã£Ã Ã²Ã¼
 
 				if (TileMap[i][j] == 'c')
-					tile.setTextureRect(IntRect(512, 256, 64, 64)); // êëþ÷
+					tile.setTextureRect(IntRect(512, 256, 64, 64)); // ÃªÃ«Ã¾Ã·
 
 				if (TileMap[i][j] == 'T')
-					tile.setTextureRect(IntRect(448, 318, 64, 128)); // äâåðü
+					tile.setTextureRect(IntRect(448, 318, 64, 128)); // Ã¤Ã¢Ã¥Ã°Ã¼
 
 				if (TileMap[i][j] == 'V')
-					tile.setTextureRect(IntRect(320, 320, 64, 128)); // äâåðü îòêðûòà
+					tile.setTextureRect(IntRect(320, 320, 64, 128)); // Ã¤Ã¢Ã¥Ã°Ã¼ Ã®Ã²ÃªÃ°Ã»Ã²Ã 
 
 				if (TileMap[i][j] == 'g')
-					tile.setTextureRect(IntRect(0, 320, 64, 64));// øèïû
+					tile.setTextureRect(IntRect(0, 320, 64, 64));// Ã¸Ã¨Ã¯Ã»
 
 				if (TileMap[i][j] == '0')
-					tile.setTextureRect(IntRect(256, 256, 64, 64)); // êðàé êàðòû
+					tile.setTextureRect(IntRect(256, 256, 64, 64)); // ÃªÃ°Ã Ã© ÃªÃ Ã°Ã²Ã»
 
 				if (TileMap[i][j] == ' ' || TileMap[i][j] == 't' || TileMap[i][j] == 'v')
 					continue;
@@ -345,6 +353,7 @@ void GameRunning()
 	{
 		offsetX = 0;
 		GameRunning();
+		Zdvig = 0;
 	}
 }
 int main()
