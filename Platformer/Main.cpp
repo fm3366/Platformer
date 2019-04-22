@@ -2,7 +2,60 @@
 #include <SFML/Audio.hpp>
 #include<iostream>
 #include<math.h>
+
 using namespace sf;
+bool isExit = 0;
+void menu(RenderWindow & window, bool &exit) 
+{
+	Texture menuTexture1, menuTexture3, aboutTexture, menuBackground;
+	menuTexture1.loadFromFile("111.png");
+	menuTexture3.loadFromFile("333.png");
+	menuBackground.loadFromFile("background.jpg");
+	Sprite menu1(menuTexture1), menu3(menuTexture3), menuBg(menuBackground);
+	bool isMenu = 1;
+	int menuNum = 0;
+	menu1.setPosition(100, 30);
+	menu3.setPosition(100, 130);
+	menuBg.setPosition(0, 0);
+	while (isMenu)
+	{
+		menu1.setColor(Color::White);
+		menu3.setColor(Color::White);
+		menuNum = 0;
+		window.clear(Color(129, 181, 221));
+
+		if (IntRect(100, 30, 300, 50).contains(Mouse::getPosition(window)))
+		{
+			menu1.setColor(Color::Blue);
+			menuNum = 1; 
+		}
+		if (IntRect(100, 150, 300, 50).contains(Mouse::getPosition(window)))
+		{ menu3.setColor(Color::Blue);
+		menuNum = 3;
+		}
+
+		if (Mouse::isButtonPressed(Mouse::Left))
+		{
+			if (menuNum == 1) isMenu = false;
+			if (menuNum == 3)
+			{
+			window.close(); 
+			isMenu = false; 
+			exit = 1;
+			}
+
+		}
+
+		window.draw(menuBg);
+		window.draw(menu1);
+		window.draw(menu3);
+
+		window.display();
+	}
+}
+
+
+
 float offsetX = 0, offsetY = 0;
 const int H = 15;
 const int W = 150;
@@ -166,9 +219,10 @@ public:
 	}
 };
 
-int main()
+bool isGameStarted()
 {
 	RenderWindow window(VideoMode(1440, 960), "Project!");
+	menu(window, isExit);
 	Texture tileSet;
 	tileSet.loadFromFile("platformPack_tilesheet.png");
 	Texture hero;
@@ -179,12 +233,12 @@ int main()
 	ENEMY  enemy;
 	enemy.set(enem, 19 * 64, 14 * 64 - 72);
 	Sprite tile(tileSet);
-	
+
 	Sprite Keyimage(tileSet);
 	Keyimage.setTextureRect(IntRect(512, 256, 64, 64));
 	Keyimage.setPosition(1376, 0);
-	
-	
+
+
 	SoundBuffer buffer;
 	buffer.loadFromFile("Jump.ogg");
 	Sound sound(buffer);
@@ -274,9 +328,25 @@ int main()
 			window.draw(Keyimage);
 		window.draw(enemy.sprite);
 		window.draw(Hero.sprite);
-
+		if (Keyboard::isKeyPressed(Keyboard::Tab))
+		{
+			return true;
+			offsetX = 0;
+			offsetY = 0;
+		}
+		if (Keyboard::isKeyPressed(Keyboard::Escape))
+			return false;
 		window.display();
 	}
 
+}
+void GameRunning()
+{
+	if (isGameStarted() && !isExit)
+		GameRunning();
+}
+int main()
+{
+	GameRunning();
 	return 0;
 }
