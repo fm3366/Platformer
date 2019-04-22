@@ -68,7 +68,7 @@ String TileMap[H] = {
 "0             kkkkkkk                      0                                                                                                         0",
 "0                      kk                  0                                                                                                         0",
 "0                         k                0                                                                                                         0",
-"0                          kk    T         0                                                                                                         0",
+"0                          kk c  T         0                                                                                                         0",
 "0                             k  t         0                                                                                                         0",
 "0                              kkk         0                                                                                                         0",
 "0                        ck       k        0                                                                                                         0",
@@ -155,6 +155,7 @@ public:
 				{
 					keyes = keyes - 1;
 					TileMap[i][j] = 'V';
+					TileMap[i+1][j] = 'v';
 				}
 				if ((TileMap[i][j] == 't') && keyes!= 0)
 				{
@@ -331,8 +332,6 @@ bool isGameStarted()
 		if (Keyboard::isKeyPressed(Keyboard::Tab))
 		{
 			return true;
-			offsetX = 0;
-			offsetY = 0;
 		}
 		if (Keyboard::isKeyPressed(Keyboard::Escape))
 			return false;
@@ -343,7 +342,10 @@ bool isGameStarted()
 void GameRunning()
 {
 	if (isGameStarted() && !isExit)
+	{
+		offsetX = 0;
 		GameRunning();
+	}
 }
 int main()
 {
