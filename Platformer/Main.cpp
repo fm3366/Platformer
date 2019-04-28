@@ -58,13 +58,23 @@ void menu(RenderWindow & window, bool &exit)
 
 
 
-float offsetX = 0, offsetY = 0;
-const int H = 15;
+float offsetX = 0, offsetY = 640;
+const int H = 25;
 const int W = 150;
 String TileMap[H] = {
 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-"0                                          k                                           k                                                             0",
-"0                                          k          k                                k                                                             0",
+"0                k                         k                                           k                                                             0",
+"0               k                          k                                           k                                                             0",
+"0              k                           k                                           k                                                             0",
+"0             k                            k                                           k                                                             0",
+"0            k                             k                                           k                                                             0",
+"0           k                              k                                           k                                                             0",
+"0          k                               k                                           k                                                             0",
+"0         k                                k                                           k                                                             0",
+"0        k                                 k                                           k                                                             0",
+"0       k                                  k                                           k                                                             0",
+"0      k                                   k                                           k                                                             0",
+"0     k                                    k          k                                k                                                             0",
 "0c                                         k       T     k                             k                         c                                   0",
 "0kkkkkkkkkkk                               k       t                                   k                         k                                   0",
 "0             kkkkkkk                      k       k k k   g                           k                        k                                    0",
@@ -93,7 +103,7 @@ public:
 	PLAYER(Texture &image)
 	{
 		sprite.setTexture(image);
-		rect = FloatRect(65, 600, 60, 64);
+		rect = FloatRect(65, 1240, 60, 64);
 		dx = dy = 0.1;
 		currentFrame = 0;
 		keyes = 0;
@@ -180,7 +190,7 @@ public:
 			{
 				if ((TileMap[i][j] == 'V') || (TileMap[i][j] == 'v'))
 				{
-					rect = FloatRect(44 * 64 * Zdvig + 1, 600, 60, 64);
+					rect = FloatRect(44 * 64 * Zdvig + 1, 1240, 60, 64);
 					Zdvig++;
 
 				}
@@ -253,7 +263,7 @@ public:
 	{
 		life = a;
 	}
-	void ATTACK(PLAYER Hero)
+	void ATTACK(PLAYER &Hero)
 	{
 		if (Hero.rect.intersects(rect))
 		{
@@ -305,6 +315,7 @@ public:
 		if (!life)
 		{
 			sprite.setTextureRect(IntRect(71, 188, 70, 48));
+			rect.top =24*64 - 48;
 		}
 		sprite.setPosition(rect.left - offsetX, rect.top - offsetY);
 	}
@@ -338,9 +349,9 @@ bool isGameStarted()
 	enem.loadFromFile("enemies.png");
 	PLAYER Hero(hero);
 	GOAST enemy;
-	enemy.set(enem, 19 * 64, 14 * 64 - 72);
+	enemy.set(enem, 19 * 64, 24 * 64 - 72);
 	BAT bbat;
-	bbat.set(enem, 64 * 64, 13 * 64 - 48);
+	bbat.set(enem, 64 * 64, 23 * 64 - 48);
 	Sprite tile(tileSet);
 	Sprite Keyimage(tileSet);
 	Keyimage.setTextureRect(IntRect(512, 256, 64, 64));
@@ -395,7 +406,8 @@ bool isGameStarted()
 		enemy.ATTACK(Hero);
 		bbat.ATTACK(Hero);
 
-		if (Hero.rect.left > 200) offsetX = Hero.rect.left - 200;
+		if (Hero.rect.left > 500) offsetX = Hero.rect.left - 500;
+		if (Hero.rect.top < 1240) offsetY = Hero.rect.top - 600;
 
 		window.clear(Color(107, 140, 255));
 
