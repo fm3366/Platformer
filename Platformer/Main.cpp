@@ -2,6 +2,7 @@
 #include <SFML/Audio.hpp>
 #include<iostream>
 #include<math.h>
+#include <time.h>
 
 using namespace sf;
 bool isExit = 0;
@@ -92,7 +93,7 @@ String TileMap[H] = {
 class PLAYER {
 
 public:
-
+	int HP;
 	float dx, dy;
 	FloatRect rect;
 	bool onGround;
@@ -108,6 +109,11 @@ public:
 		currentFrame = 0;
 		keyes = 0;
 		Texture key;
+		HP = 3;
+	}
+	int getHP()
+	{
+		return HP;
 	}
 	void update(float time)
 	{
@@ -127,6 +133,7 @@ public:
 			sprite.setTextureRect(IntRect(10 + 94 * int(currentFrame) + 82, 20, -82, 76));
 		sprite.setPosition(rect.left - offsetX, rect.top - offsetY);
 		dx = 0;
+
 		remove();
 	}
 	void Collision(int num)
@@ -156,8 +163,12 @@ public:
 				}
 				if (TileMap[i][j] == 'g' && (rect.top + 76) > (i * 64 + 32) && (abs(rect.left - j * 64) < 40))
 				{
-					sprite.setColor(Color::Red);
+					HP = HP - 1;
+					if(dx > 0) rect.left = j * 64 - rect.width;
+					else rect.left = j * 64 + 64;
+					dy = -0.4;
 				}
+				
 				if (TileMap[i][j] == 'c')
 				{
 					TileMap[i][j] = ' ';
@@ -177,7 +188,6 @@ public:
 					TileMap[i][j] = 'v';
 				}
 			}
-
 	}
 	int getkey()
 	{
@@ -192,6 +202,7 @@ public:
 				{
 					rect = FloatRect(44 * 64 * Zdvig + 1, 1240, 60, 64);
 					Zdvig++;
+					offsetY = 640;
 
 				}
 			}
@@ -269,7 +280,13 @@ public:
 		{
 			if (life) {
 				if (Hero.dy > 0) { dx = 0; Hero.dy = -0.2; life = false; }
-				else Hero.sprite.setColor(Color::Red);
+				else
+				{
+					Hero.HP = Hero.HP - 1;
+					Hero.dy = -0.4;
+					if (dx > 0) { dx = -0.15; Hero.rect.left = Hero.rect.left + 15; }
+					else { dx = 0.15; Hero.rect.left = Hero.rect.left - 15; }
+				}
 			}
 		}
 	}
@@ -357,6 +374,9 @@ bool isGameStarted()
 	Keyimage.setTextureRect(IntRect(512, 256, 64, 64));
 	Keyimage.setPosition(1376, 0);
 
+	Sprite heart(tileSet);
+	heart.setTextureRect(IntRect(704, 256, 64, 64));
+	heart.setPosition(0, 0);
 
 	SoundBuffer buffer;
 	buffer.loadFromFile("Jump.ogg");
@@ -443,6 +463,11 @@ bool isGameStarted()
 			}
 		if (Hero.getkey() != 0)
 			window.draw(Keyimage);
+		for (int i = 0; i < Hero.getHP(); i++)
+		{
+			heart.setPosition(i*64, 0);
+			window.draw(heart);
+		}
 		window.draw(enemy.getSprite());
 		window.draw(bbat.getSprite());
 		window.draw(Hero.sprite);
