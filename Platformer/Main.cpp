@@ -190,12 +190,13 @@ public:
 
 class ENEMY
 {
-public:
+protected:
 	float dx, dy;
 	FloatRect rect;
 	Sprite sprite;
 	float currentFrame;
 	bool life;
+public:
 	void set(Texture &image, int x, int y)
 	{
 		sprite.setTexture(image);
@@ -204,13 +205,72 @@ public:
 		currentFrame = 0;
 		life = true;
 	}
+	float getDX()
+	{
+		return dx;
+	}
+	float getDY()
+	{
+		return dy;
+	}
+	FloatRect getrect()
+	{
+		return rect;
+	}
+	Sprite getSprite()
+	{
+		return sprite;
+	}
+	float getcurrentFrame()
+	{
+		return currentFrame;
+	}
+	bool getLife()
+	{
+		return life;
+	}
+	void setDX(float a)
+	{
+		dx = a;
+	}
+	void setDy(float a)
+	{
+		dy = a;
+	}
+	void setRect(FloatRect rect1)
+	{
+		rect = rect1;
+	}
+	void setSprite(Sprite sprite1)
+	{
+		sprite = sprite1;
+	}
+	void setCurrentframe(float a)
+	{
+		currentFrame = a;
+	}
+	void setLife(bool a)
+	{
+		life = a;
+	}
+	void ATTACK(PLAYER Hero)
+	{
+		if (Hero.rect.intersects(rect))
+		{
+			if (life) {
+				if (Hero.dy > 0) { dx = 0; Hero.dy = -0.2; life = false; }
+				else Hero.sprite.setColor(Color::Red);
+			}
+		}
+	}
+};
+class GOAST : public ENEMY
+{
+public:
 	void update(float time)
 	{
 		rect.left += dx * time;
 		Collision();
-		//currentFrame += time * 0.005;
-		//if (currentFrame > 2) 
-		//	currentFrame -= 2;
 		sprite.setTextureRect(IntRect(528, 147, 51, 72));
 		if (!life)
 			sprite.setTextureRect(IntRect(477, 278, 51, 72));
@@ -234,7 +294,38 @@ public:
 				}
 	}
 };
+class BAT : public ENEMY
+{
+public:
+	void update(float time)
+	{
+		rect.left += dx * time;
+		Collision();
+		sprite.setTextureRect(IntRect(71, 188, 70, 48));
+		if (!life)
+		{
+			sprite.setTextureRect(IntRect(71, 188, 70, 48));
+		}
+		sprite.setPosition(rect.left - offsetX, rect.top - offsetY);
+	}
+	void Collision()
+	{
+		for (int i = rect.top / 64; i < (rect.top + rect.height) / 64; i++)
+			for (int j = rect.left / 64; j < (rect.left + rect.width) / 64; j++)
+				if ((TileMap[i][j] == 'P') || (TileMap[i][j] == '0') || (TileMap[i][j] == 'k'))
+				{
+					if (dx > 0)
+					{
+						rect.left = j * 64 - rect.width; dx *= -1;
+					}
+					else if (dx < 0)
+					{
+						rect.left = j * 64 + 64;  dx *= -1;
+					}
 
+				}
+	}
+};
 bool isGameStarted()
 {
 	RenderWindow window(VideoMode(1440, 960), "Project!");
@@ -246,10 +337,11 @@ bool isGameStarted()
 	Texture enem;
 	enem.loadFromFile("enemies.png");
 	PLAYER Hero(hero);
-	ENEMY  enemy;
+	GOAST enemy;
 	enemy.set(enem, 19 * 64, 14 * 64 - 72);
+	BAT bbat;
+	bbat.set(enem, 64 * 64, 13 * 64 - 48);
 	Sprite tile(tileSet);
-
 	Sprite Keyimage(tileSet);
 	Keyimage.setTextureRect(IntRect(512, 256, 64, 64));
 	Keyimage.setPosition(1376, 0);
@@ -296,16 +388,13 @@ bool isGameStarted()
 			}
 
 		Hero.update(time);
+		bbat.update(time);
 		enemy.update(time);
+		
+		
+		enemy.ATTACK(Hero);
+		bbat.ATTACK(Hero);
 
-
-		if (Hero.rect.intersects(enemy.rect))
-		{
-			if (enemy.life) {
-				if (Hero.dy > 0) { enemy.dx = 0; Hero.dy = -0.2; enemy.life = false; }
-				else Hero.sprite.setColor(Color::Red);
-			}
-		}
 		if (Hero.rect.left > 200) offsetX = Hero.rect.left - 200;
 
 		window.clear(Color(107, 140, 255));
@@ -342,7 +431,8 @@ bool isGameStarted()
 			}
 		if (Hero.getkey() != 0)
 			window.draw(Keyimage);
-		window.draw(enemy.sprite);
+		window.draw(enemy.getSprite());
+		window.draw(bbat.getSprite());
 		window.draw(Hero.sprite);
 		if (Keyboard::isKeyPressed(Keyboard::Tab))
 		{
