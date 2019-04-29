@@ -57,8 +57,6 @@ void menu(RenderWindow & window, bool &exit)
 	}
 }
 
-
-
 float offsetX = 0, offsetY = 640;
 const int H = 25;
 const int W = 150;
@@ -89,10 +87,26 @@ String TileMap[H] = {
 "0        g    g g       kkk              t k                                      g cg k            k k kt       g  gggg                             0",
 "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
 };
+void resetMap()
+{
+	for (int i = 0; i < H; i++)
+	{
+		for (int j = 0; j < W; j++)
+		{
+			if (TileMap[i][j] == 'C')
+				TileMap[i][j] = 'c';
+			if (TileMap[i][j] == 'v')
+				TileMap[i][j] = 't';
+			if (TileMap[i][j] == 'V')
+				TileMap[i][j] = 'T';
 
+		}
+	}
+
+}
 class PLAYER {
 
-public:
+private:
 	int HP;
 	float dx, dy;
 	FloatRect rect;
@@ -100,7 +114,7 @@ public:
 	Sprite sprite;
 	float currentFrame;
 	int keyes;
-
+public:
 	PLAYER(Texture &image)
 	{
 		sprite.setTexture(image);
@@ -114,6 +128,62 @@ public:
 	int getHP()
 	{
 		return HP;
+	}
+	float getDX()
+	{
+		return dx;
+	}
+	float getDY()
+	{
+		return dy;
+	}
+	FloatRect getrect()
+	{
+		return rect;
+	}
+	Sprite getSprite()
+	{
+		return sprite;
+	}
+	float getcurrentFrame()
+	{
+		return currentFrame;
+	}
+	bool getonGround()
+	{
+		return onGround;
+	}
+	void setRectLeft(int a)
+	{
+		rect.left = a;
+	}
+	void setonGround(bool x)
+	{
+		onGround = x;
+	}
+	void setRect(FloatRect rect1)
+	{
+		rect = rect1;
+	}
+	void setDX(float a)
+	{
+		dx = a;
+	}
+	void setDy(float a)
+	{
+		dy = a;
+	}
+	void setHP(int a)
+	{
+		HP = a;
+	}
+	void setSprite(Sprite sprite1)
+	{
+		sprite = sprite1;
+	}
+	void setCurrentframe(float a)
+	{
+		currentFrame = a;
 	}
 	void update(float time)
 	{
@@ -164,14 +234,19 @@ public:
 				if (TileMap[i][j] == 'g' && (rect.top + 76) > (i * 64 + 32) && (abs(rect.left - j * 64) < 40))
 				{
 					HP = HP - 1;
-					if(dx > 0) rect.left = j * 64 - rect.width;
-					else rect.left = j * 64 + 64;
+					if (dy == 0)
+					{
+						if (dx > 0) rect.left = j * 64 - rect.width;
+						else rect.left = j * 64 + 64;
+					}
+					else
+						rect.top = rect.top - 5;
 					dy = -0.4;
 				}
 				
 				if (TileMap[i][j] == 'c')
 				{
-					TileMap[i][j] = ' ';
+					TileMap[i][j] = 'C';
 					keyes++;
 
 				}
@@ -226,6 +301,14 @@ public:
 		currentFrame = 0;
 		life = true;
 	}
+	void set(Texture &image, int x, int y, float speed)
+	{
+		sprite.setTexture(image);
+		rect = FloatRect(x, y, 64, 64);
+		dx = speed;
+		currentFrame = 0;
+		life = true;
+	}
 	float getDX()
 	{
 		return dx;
@@ -276,16 +359,16 @@ public:
 	}
 	void ATTACK(PLAYER &Hero)
 	{
-		if (Hero.rect.intersects(rect))
+		if (Hero.getrect().intersects(rect))
 		{
 			if (life) {
-				if (Hero.dy > 0) { dx = 0; Hero.dy = -0.2; life = false; }
+				if (Hero.getDY() > 0) { dx = 0; Hero.setDy(-0.2); life = false; }
 				else
 				{
-					Hero.HP = Hero.HP - 1;
-					Hero.dy = -0.4;
-					if (dx > 0) { dx = -0.15; Hero.rect.left = Hero.rect.left + 15; }
-					else { dx = 0.15; Hero.rect.left = Hero.rect.left - 15; }
+					Hero.setHP( Hero.getHP() - 1);
+					Hero.setDy  (-0.4);
+					if (dx > 0) { dx = -0.15; Hero.setRectLeft( Hero.getrect().left + 15); }
+					else { dx = 0.15; Hero.setRectLeft( Hero.getrect().left - 15); }
 				}
 			}
 		}
@@ -405,16 +488,16 @@ bool isGameStarted()
 				window.close();
 		}
 		if (Keyboard::isKeyPressed(Keyboard::Left))
-			Hero.dx = -0.1;
+			Hero.setDX (-0.1);
 
 		if (Keyboard::isKeyPressed(Keyboard::Right))
-			Hero.dx = 0.1;
+			Hero.setDX (0.1);
 
 		if (Keyboard::isKeyPressed(Keyboard::Up))
-			if (Hero.onGround)
+			if (Hero.getonGround())
 			{
-				Hero.dy = -0.43;
-				Hero.onGround = false;
+				Hero.setDy(-0.43);
+				Hero.setonGround( false);
 				sound.play();
 			}
 
@@ -426,8 +509,8 @@ bool isGameStarted()
 		enemy.ATTACK(Hero);
 		bbat.ATTACK(Hero);
 
-		if (Hero.rect.left > 500) offsetX = Hero.rect.left - 500;
-		if (Hero.rect.top < 1240) offsetY = Hero.rect.top - 600;
+		if (Hero.getrect().left > 500) offsetX = Hero.getrect().left - 500;
+		if (Hero.getrect().top < 1240) offsetY = Hero.getrect().top - 600;
 
 		window.clear(Color(107, 140, 255));
 
@@ -455,7 +538,7 @@ bool isGameStarted()
 				if (TileMap[i][j] == '0')
 					tile.setTextureRect(IntRect(256, 256, 64, 64)); // êðàé êàðòû
 
-				if (TileMap[i][j] == ' ' || TileMap[i][j] == 't' || TileMap[i][j] == 'v')
+				if (TileMap[i][j] == ' ' || TileMap[i][j] == 't' || TileMap[i][j] == 'v' || TileMap[i][j] == 'C')
 					continue;
 
 				tile.setPosition(j * 64 - offsetX, i * 64 - offsetY);
@@ -470,9 +553,13 @@ bool isGameStarted()
 		}
 		window.draw(enemy.getSprite());
 		window.draw(bbat.getSprite());
-		window.draw(Hero.sprite);
-		if (Keyboard::isKeyPressed(Keyboard::Tab))
+		window.draw(Hero.getSprite());
+		if (Keyboard::isKeyPressed(Keyboard::Tab) || Hero.getHP() == 0 || Zdvig == 4)
 		{
+			offsetX = 0;
+			offsetY = 640;
+			Zdvig = 1;
+			resetMap();
 			return true;
 		}
 		if (Keyboard::isKeyPressed(Keyboard::Escape))
@@ -481,15 +568,19 @@ bool isGameStarted()
 	}
 
 }
+
 void GameRunning()
 {
 	if (isGameStarted() && !isExit)
 	{
 		offsetX = 0;
+		offsetY = 640;
 		GameRunning();
-		Zdvig = 0;
+		Zdvig = 1;
+		resetMap();
 	}
 }
+
 int main()
 {
 	GameRunning();
